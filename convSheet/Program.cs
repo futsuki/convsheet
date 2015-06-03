@@ -156,7 +156,7 @@ end
             if (args.list.Count == 0)
             {
                 Console.WriteLine(
-                    "excelToProto (XLSXFile) (SheetID) (Options)\n" +
+                    "convsheet (XLSXFile) (SheetID) (Options)\n" +
                     "\n" +
                     "Options List:\n" +
                     "     -csv: Output CSV files\n" +
