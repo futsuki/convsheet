@@ -6,7 +6,7 @@ using System.Text;
 namespace convSheet
 {
 
-    // wroted by http://dobon.net/vb/dotnet/file/readcsvfile.html
+    // wrote by http://dobon.net/vb/dotnet/file/readcsvfile.html
     public static class CSV
     {
         public class CSVException : Exception

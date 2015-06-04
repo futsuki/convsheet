@@ -1,8 +1,11 @@
 ﻿<Properties StartupItem="convSheet\convSheet.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="convSheet\Program.cs">
     <Files>
-      <File FileName="convSheet\Program.cs" Line="18" Column="1" />
+      <File FileName="convSheet\Program.cs" Line="25" Column="10" />
+      <File FileName="convSheet\CSV.cs" Line="10" Column="10" />
+      <File FileName="convSheet\CRC32.cs" Line="58" Column="45" />
+      <File FileName="convSheet\Properties\AssemblyInfo.cs" Line="12" Column="34" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
