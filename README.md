@@ -15,7 +15,7 @@ $ convsheet (XLSXFile) (SheetID) (Options)
 
 -----
 
-## Thank
+## Acknowledgment
 
 NPOI - Xslx file reading - https://npoi.codeplex.com/
 
