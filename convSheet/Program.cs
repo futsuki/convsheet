@@ -50,7 +50,7 @@ namespace convSheet
 #if USE_MOONSHARP
 
         MoonSharp.Interpreter.Script lua;
-        MoonSharp.Interpreter.Table checkSheet, applySheet, checkWorkbook, applyWorkbook, evalPath, replaceTable;
+        MoonSharp.Interpreter.Table checkSheet, applySheet, checkWorkbook, applyWorkbook, evalPath, replaceTable, infoTable;
         MoonSharp.Interpreter.Closure caller, replaceTags;
 
 
@@ -63,11 +63,13 @@ namespace convSheet
             applyWorkbook = MoonSharp.Interpreter.DynValue.NewTable(lua).Table;
             evalPath = MoonSharp.Interpreter.DynValue.NewTable(lua).Table;
             replaceTable = MoonSharp.Interpreter.DynValue.NewTable(lua).Table;
+            infoTable = MoonSharp.Interpreter.DynValue.NewTable(lua).Table;
             lua.Globals["checkSheet"] = checkSheet;
             lua.Globals["applySheet"] = applySheet;
             lua.Globals["checkWorkbook"] = checkSheet;
             lua.Globals["applyWorkbook"] = applySheet;
             lua.Globals["evalPath"] = evalPath;
+            lua.Globals["info"] = infoTable;
             lua.Globals["crc32hash"] = (Func<string, int>)CRC32.ToHash;
             lua.Globals["fileget"] = (Func<string, BinaryData>)LoadAllBytesForLua;
             lua.Globals["httpget"] = (Func<string, byte[]>)LoadWebBytes;
@@ -189,7 +191,10 @@ end
                 }
                 foreach (var kv in dic) {
                     Console.WriteLine("Output: "+kv.Key);
-                    System.IO.File.WriteAllText(kv.Key, kv.Value);
+                    System.IO.Directory.CreateDirectory (System.IO.Path.GetDirectoryName(kv.Key));
+                    if (!System.IO.File.Exists(kv.Key) || System.IO.File.ReadAllText (kv.Key) != kv.Value) {
+                        System.IO.File.WriteAllText (kv.Key, kv.Value);
+                    }
                 }
                 return;
             }
@@ -200,7 +205,7 @@ end
 
             var replaceDic = new Dictionary<string, string>();
             replaceDic["filefull"] = spreadsheetPath;
-            replaceDic["file"] = spreadsheetPath.Substring(0, spreadsheetPath.Length - System.IO.Path.GetExtension(spreadsheetPath).Length);
+            replaceDic["file"] = System.IO.Path.GetFileName(spreadsheetPath.Substring(0, spreadsheetPath.Length - System.IO.Path.GetExtension(spreadsheetPath).Length));
             replaceDic["ext"] = System.IO.Path.GetExtension(spreadsheetPath).Substring(1);
             replaceDic["dir"] = System.IO.Path.GetDirectoryName(spreadsheetPath);
             replaceDic["sheet"] = "";
@@ -210,6 +215,11 @@ end
             foreach (var k in checkWorkbook.Pairs)
             {
                 lua.Globals["workbook"] = WorkbookToLuaTable(workbookData);
+                infoTable ["filefull"] = replaceDic ["filefull"];
+                infoTable ["file"] = replaceDic ["file"];
+                infoTable ["ext"] = replaceDic ["ext"];
+                infoTable ["dir"] = replaceDic ["dir"];
+                infoTable ["sheet"] = replaceDic ["sheet"];
                 var fn = k.Value.Function;
                 var res = caller.Call(fn);
                 if (res.CastToBool())
@@ -218,7 +228,6 @@ end
                     var outputTable = caller.Call(applyWorkbook.Get(k.Key).Function).Table;
                     var newpath = spreadsheetPath + "." + k.Key.String;
                     WriteOutResultTable(outputTable, replaceDic, outputdir);
-                    //System.IO.File.WriteAllText(newpath, outBuf);
                 }
             }
 
@@ -233,6 +242,11 @@ end
                     lua.Globals["workbook"] = workbookLuaTable;
                     lua.Globals["sheet"] = sheetVal;
                     replaceDic["sheet"] = p.Key.String;
+                    infoTable ["filefull"] = replaceDic ["filefull"];
+                    infoTable ["file"] = replaceDic ["file"];
+                    infoTable ["ext"] = replaceDic ["ext"];
+                    infoTable ["dir"] = replaceDic ["dir"];
+                    infoTable ["sheet"] = replaceDic ["sheet"];
                     var fn = k.Value.Function;
                     var res = caller.Call(fn);
                     if (res.CastToBool())
@@ -241,7 +255,6 @@ end
                         var outputTable = caller.Call(applySheet.Get(k.Key).Function).Table;
                         var newpath = spreadsheetPath + "." + k.Key.String;
                         WriteOutResultTable(outputTable, replaceDic, outputdir);
-                        //System.IO.File.WriteAllText(newpath, outBuf);
                     }
                 }
             }
@@ -266,7 +279,10 @@ end
                 if (!string.IsNullOrEmpty(filename))
                 {
                     Console.WriteLine("Output: " + outputdir + filename);
-                    System.IO.File.WriteAllText(outputdir + filename, value);
+                    System.IO.Directory.CreateDirectory (System.IO.Path.GetDirectoryName(outputdir + filename));
+                    if (!System.IO.File.Exists(outputdir + filename) || System.IO.File.ReadAllText (outputdir + filename) != value) {
+                        System.IO.File.WriteAllText (outputdir + filename, value);
+                    }
                 }
             }
         }
