@@ -191,7 +191,9 @@ end
                 }
                 foreach (var kv in dic) {
                     Console.WriteLine("Output: "+kv.Key);
-                    System.IO.Directory.CreateDirectory (System.IO.Path.GetDirectoryName(kv.Key));
+                    var dir = System.IO.Path.GetDirectoryName(kv.Key);
+                    if (!string.IsNullOrEmpty(dir))
+                        System.IO.Directory.CreateDirectory (dir);
                     if (!System.IO.File.Exists(kv.Key) || System.IO.File.ReadAllText (kv.Key) != kv.Value) {
                         System.IO.File.WriteAllText (kv.Key, kv.Value);
                     }
@@ -279,7 +281,9 @@ end
                 if (!string.IsNullOrEmpty(filename))
                 {
                     Console.WriteLine("Output: " + outputdir + filename);
-                    System.IO.Directory.CreateDirectory (System.IO.Path.GetDirectoryName(outputdir + filename));
+                    var dir = System.IO.Path.GetDirectoryName (outputdir + filename);
+                    if (!string.IsNullOrEmpty(dir))
+                        System.IO.Directory.CreateDirectory (dir);
                     if (!System.IO.File.Exists(outputdir + filename) || System.IO.File.ReadAllText (outputdir + filename) != value) {
                         System.IO.File.WriteAllText (outputdir + filename, value);
                     }
